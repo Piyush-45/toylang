@@ -62,7 +62,6 @@ function parser(tokens) {
 
     while (tokens.length > 0) {
         let token = tokens.shift()
-
         if (token.type === 'keyword' && token.value === 'ramRamVariable') {
             let declaration = {
                 type: 'Declaration',
@@ -83,27 +82,11 @@ function parser(tokens) {
             ast.body.push(declaration)
         }
 
-        if (token.type === 'keyword' && token.value === 'agar') {
-            const condition = tokens.shift().value; // Store the condition
-            const ifBody = [];
-            while (tokens.length > 0 && !(tokens[0].type === 'keyword' && tokens[0].value === 'magar')) {
-                ifBody.push(tokens.shift());
-            }
-            const elseBody = [];
-            if (tokens[0].type === 'keyword' && tokens[0].value === 'magar') {
-                tokens.shift(); // Consume 'magar'
-                while (tokens.length > 0) {
-                    elseBody.push(tokens.shift());
-                }
-            }
-            ast.body.push({ type: 'IfStatement', condition, ifBody, elseBody });
-        }
-
         if (token.type === 'keyword' && token.value === 'aashirvad') {
             ast.body.push({
                 type: 'Print',
                 expression: tokens.shift().value
-            });
+            })
         }
 
     }
@@ -117,20 +100,7 @@ function codeGen(node) {
 
         case 'Declaration': return `let ${node.name} = ${node.value}`
 
-        case 'Print': return `console.log('${node.expression}')`;
-
-
-        case 'IfStatement': {
-            let ifCode = `if (${node.condition}) {\n`;
-            ifCode += node.ifBody.map(codeGen).join('\n');
-            if (node.elseBody.length > 0) {
-                ifCode += '} else {\n';
-                ifCode += node.elseBody.map(codeGen).join('\n');
-            }
-            ifCode += '}';
-            return ifCode;
-        }
-        
+        case 'Print': return `console.log(${node.expression})`
 
     }
 }
@@ -141,7 +111,9 @@ function compiler(input) {
     const ast = parser(tokens);
 
     const executableCode = codeGen(ast)
-   
+    // console.log(tokens)
+    // console.log(ast)
+    // console.log(executableCode)
     return executableCode
 
 }
@@ -152,16 +124,13 @@ function runner(input) {
 }
 
 const code = `
-ramRamVariable x = 110,
-ramRamVariable y = 20,
-agar x < y,
-    aashirvad y
-magar,
-    aashirvad x
+ramRamVariable x = 103,
+ramRamVariable y = '-203',
 
+ramRamVariable sum = x-y
+aashirvad sum
 `;
 
-const exec = compiler(code);
+const exec = compiler(code)
 
-runner(exec);
-
+runner(exec)
